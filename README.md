@@ -69,9 +69,17 @@ This is recalculated fresh every single loop tick from the stick's *current* pos
 
 ## Receiver
 
-The receiver side is intentionally minimal here: an **Arduino Nano (or Uno) + any nRF24L01 module**, printing every received packet straight to the Serial Monitor — no servo/PWM output, just a clean, human-readable dump of the transmitter's full state (both sticks, both triggers, every button by name, d-pad direction, link status) for testing and debugging the radio link. See `gamepad_receiver_complete.ino`.
+The receiver side is intentionally minimal here: an **Arduino Nano (or Uno) + any nRF24L01 module**, decoding the full 11-byte packet and printing a complete, human-readable dump straight to the Serial Monitor — no servo/PWM output, just the transmitter's full state for testing and debugging the radio link. See `receiver_serial_debug.ino`.
 
-**A note on this receiver's own efficiency:** the debug print is rate-limited to a fixed 5 updates/second, decoupled from how fast packets actually arrive. Printing a full human-readable dump on *every single packet* (which can arrive every few milliseconds while a stick is being moved) would make the receiver's loop fall behind in real time and start silently dropping packets — the fix here is the same "receive cheaply, report on a fixed schedule" pattern the transmitter itself uses for its own debug output.
+Every packet that actually arrives gets its own line, showing:
+- a running packet count and the transmitter's own `seq` number
+- whether the packet was live gamepad data or just a heartbeat, and the (display-only) armed/safe flag
+- a running dropped-packet count, worked out from gaps in `seq`
+- all 4 stick axes (LX/LY/RX/RY) and both analog triggers (LT/RT), raw 0–255
+- the d-pad direction as text (`up`/`down`/`left`/`right`/`neutral`) rather than a raw hat value
+- every currently-held button by name (`X`, `A`, `LB`, `SELECT`, `ML`, …), decoded from the 16-bit bitmask, plus the raw hex value for cross-checking
+
+If no packet arrives for more than 500ms, it also prints a `LINK LOST` line (rate-limited to once a second so a dead link doesn't spam the monitor). Because this sketch is purely for bench-testing the radio link, it deliberately does **not** rate-limit the normal per-packet output the way the transmitter's own debug print does — you're meant to watch it while moving one stick/button at a time, so seeing literally every packet is the point.
 
 ## Using a different gamepad
 
