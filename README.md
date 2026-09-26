@@ -2,7 +2,7 @@
 
 Turn any USB gamepad into a low-latency nRF24 RC transmitter — ESP32-S3, OLED menu, live trims, axis reversal, and an adjustable throttle curve.
 
-<img src="https://github.com/user-attachments/assets/5eb46359-2449-4e06-b082-e2bd22275353" width="25%">
+<img src="https://github.com/user-attachments/assets/5eb46359-2449-4e06-b082-e2bd22275353" width="40%">
 
 
 This project lets a standard USB HID gamepad (wired, or via a wireless dongle — this build was tested with an **EvoFox One S**) act as a full RC transmitter for anything you'd normally fly or drive with a dedicated radio — a drone, an RC car, or any other project listening on an nRF24 link. A USB gamepad is plugged into the ESP32-S3's native USB host port; the board reads every stick, trigger, button, and d-pad press directly from the raw HID report, applies your trims/reverse/curve settings, and streams the result out over an nRF24 radio in a compact, fixed-size packet. An OLED + rotary encoder + 4-button control panel lets you adjust everything on the transmitter itself — no laptop, no phone, nothing else needed.
